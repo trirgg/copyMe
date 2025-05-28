@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-light : #60a5fa;
+  --color-primary : #3b82f6;
+  --color-primary-dark : #2563eb;
+  --color-secondary : #64748b;
+  --color-light-bg : #f8fafc;
+  --color-item-bg : #ffffff;
+  --color-item-border : #e2e8f0;
+  --color-danger: #ef4444;
+  --color-danger--hover: #dc2626;
+  --color-succes: #10b981 ;
+  --color-succes--hover: #059669 ;
+
+  --shadow-boxShadow-card : '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)';
+  --shadow-boxShadow-card-hover : '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+}
