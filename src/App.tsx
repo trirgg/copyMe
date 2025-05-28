@@ -1,66 +1,38 @@
 // /home/tri/user/project/copyMe/src/App.tsx
-import React, { useState, useEffect } from 'react';
+import React from 'react'; // Removed useState, useEffect
 import Header from './components/Header';
 import AddItemForm from './components/AddItemForm';
 import ClipboardHistory from './components/ClipboardHistory';
-import './style.css'; // Make sure this is imported (usually in main.tsx or here)
+import LocalStorageUsage from "./components/LocalStorageUsage.tsx";
+import { useAppStore } from './store';
+// import {useAppStore} from 'src/store.ts'// Import the Zustand store
+import './style.css';
 
-interface ClipItem {
-    id: string;
-    text: string;
-}
-const LOCAL_STORAGE_KEY = 'copyMeClipboardHistory';
+// ClipItem interface can be moved to store.ts or a shared types file if used elsewhere
+// interface ClipItem {
+//     id: string;
+//     text: string;
+// }
+const LOCAL_STORAGE_KEY = 'copyMeClipboardHistory'; // Still useful for LocalStorageUsage component
 
 const App: React.FC = () => {
-    // const [history, setHistory] = useState<ClipItem[]>([]);
-    const [showCopiedMessage, setShowCopiedMessage] = useState(false);
-    const [copiedMessageText, setCopiedMessageText] = useState("Copied to clipboard!"); // For dynamic messages
+    // Get state and actions from the Zustand store
+    const history = useAppStore((state) => state.history);
+    const showCopiedMessage = useAppStore((state) => state.showCopiedMessage);
+    const copiedMessageText = useAppStore((state) => state.copiedMessageText);
+    const addItem = useAppStore((state) => state.addItem);
+    const deleteItem = useAppStore((state) => state.deleteItem);
+    const setCopiedMessage = useAppStore((state) => state.setCopiedMessage);
 
-    const [history, setHistory] = useState<ClipItem[]>(() => {
-        // Load initial state from local storage
-        try {
-            const storedHistory = localStorage.getItem(LOCAL_STORAGE_KEY);
-            if (storedHistory) {
-                const parsedHistory = JSON.parse(storedHistory);
-                if (Array.isArray(parsedHistory) &&
-                    parsedHistory.every(item => typeof item.id === 'string' && typeof item.text === 'string')) {
-                    return parsedHistory;
-                }
-            }
-        } catch (error) {
-            console.error("Error loading items from localStorage:", error);
-        }
-        return []; // Default to empty array if nothing in storage or error
-    });
-
-
-    useEffect(() => {
-        try {
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(history));
-        } catch (error) {
-            console.error("Error saving items to localStorage:", error);
-            // Handle potential errors, e.g., localStorage is full or disabled
-            alert("Could not save items. Local storage might be full or disabled.");
-        }
-    }, [history]);
-
-    useEffect(() => {
-        localStorage.setItem('clipboardHistory', JSON.stringify(history));
-    }, [history]);
+    // The local storage loading and saving logic is now handled by the Zustand persist middleware.
+    // No more useEffect hooks for localStorage here!
 
     const handleAddItem = (itemText: string) => {
-        const newItem: ClipItem = {
-            id: Date.now().toString(), // Generate a unique ID
-            text: itemText,
-        };
-        // Update the state. This will trigger the useEffect above to save.
-        setHistory(prevHistory => [newItem, ...prevHistory]);
+        addItem(itemText); // Call the action from the store
     };
 
     const displayCopiedMessage = (message: string) => {
-        setCopiedMessageText(message);
-        setShowCopiedMessage(true);
-        setTimeout(() => setShowCopiedMessage(false), 2500); // Hide message after 2.5 seconds
+        setCopiedMessage(message); // Call the action from the store
     };
 
     const handleCopyItem = async (itemText: string) => {
@@ -74,16 +46,12 @@ const App: React.FC = () => {
     };
 
     const handleDeleteItem = (itemId: string) => {
-        setHistory(prevHistory => prevHistory.filter(item => item.id !== itemId));
+        deleteItem(itemId); // Call the action from the store
     };
 
     const handleCopyAll = async () => {
         if (history.length === 0) return;
-
-        // Format the history for copying. Each item on a new line.
-        // You can customize this format.
-        const allItemsText = history.map(item => item.text).join('\n\n---\n\n'); // Join with a separator
-
+        const allItemsText = history.map(item => item.text).join('\n\n---\n\n');
         try {
             await navigator.clipboard.writeText(allItemsText);
             displayCopiedMessage(`Copied all ${history.length} items!`);
@@ -104,9 +72,9 @@ const App: React.FC = () => {
                 <Header />
                 <AddItemForm onAddItem={handleAddItem} />
 
-                {/* Button to copy all clipboard items */}
-                {history.length > 0 && (
-                    <div className="text-right mb-4 -mt-2"> {/* Adjust margin as needed */}
+                {/* Layout for Copy All button and LocalStorageUsage */}
+                <div className="flex justify-between items-center mb-4 -mt-2">
+                    {history.length > 0 ? (
                         <button
                             onClick={handleCopyAll}
                             className="px-4 py-2 bg-secondary/80 hover:bg-secondary text-white text-xs font-medium rounded-md
@@ -116,8 +84,12 @@ const App: React.FC = () => {
                         >
                             Copy All ({history.length})
                         </button>
-                    </div>
-                )}
+                    ) : (
+                        <div /> /* Placeholder to maintain layout if button isn't shown */
+                    )}
+                    <LocalStorageUsage storageKey={LOCAL_STORAGE_KEY} />
+                </div>
+
 
                 <ClipboardHistory
                     history={history}
