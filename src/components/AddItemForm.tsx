@@ -31,7 +31,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAddItem }) => {
             <button
                 type="submit"
                 disabled={!inputValue.trim()}
-                className="px-5 py-2.5 bg-primary bg-primary   text-white font-semibold rounded-lg
+                className="px-5 py-2.5 bg-primary    text-white font-semibold rounded-lg
                            hover:bg-primary-dark focus:outline-none focus:ring-2
                            focus:ring-primary focus:ring-offset-1
                            transition-colors duration-150 ease-in-out

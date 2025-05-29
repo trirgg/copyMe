@@ -4,7 +4,7 @@ import Header from './components/Header';
 import AddItemForm from './components/AddItemForm';
 import ClipboardHistory from './components/ClipboardHistory';
 import LocalStorageUsage from "./components/LocalStorageUsage.tsx";
-import { useAppStore } from './store';
+import { useAppStore } from './store'
 // import {useAppStore} from 'src/store.ts'// Import the Zustand store
 import './style.css';
 
@@ -16,7 +16,7 @@ import './style.css';
 const LOCAL_STORAGE_KEY = 'copyMeClipboardHistory'; // Still useful for LocalStorageUsage component
 
 const App: React.FC = () => {
-    // Get state and actions from the Zustand store
+    // Get store and actions from the Zustand store
     const history = useAppStore((state) => state.history);
     const showCopiedMessage = useAppStore((state) => state.showCopiedMessage);
     const copiedMessageText = useAppStore((state) => state.copiedMessageText);
@@ -64,7 +64,7 @@ const App: React.FC = () => {
     return (
         <div className="min-h-screen bg-light-bg flex flex-col items-center py-8 sm:py-12 px-4">
             {showCopiedMessage && (
-                <div className="fixed top-5 right-5 bg-success text-white px-4 py-2 rounded-md shadow-lg transition-all duration-300 ease-in-out animate-fadeInOut">
+                <div className="fixed top-5 right-5 bg-succes text-black px-4 py-2 rounded-md shadow-lg transition-all duration-300 ease-in-out animate-fadeInOut">
                     {copiedMessageText}
                 </div>
             )}
